@@ -10,39 +10,49 @@ import java.sql.SQLException;
 @org.springframework.web.bind.annotation.RestController
 public class RestController {
     public static class RestResponse {
-        private String p1;
-        private String p2;
+        private String status;
+        private String phone;
 
 
-        public String getP2() {
-            return p2;
+        public String getPhone() {
+            return phone;
         }
 
-        public void setP2(String p2) {
-            this.p2 = p2;
+        public void setPhone(String phone) {
+            this.phone = phone;
         }
 
-        public String getP1() {
-            return p1;
+        public String getStatus() {
+            return status;
         }
 
-        public void setP1(String p1) {
-            this.p1 = p1;
+        public void setStatus(String status) {
+            this.status = status;
         }
 
     }
     @RequestMapping(value = "/delete", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public RestResponse restMethod(String phone) throws SQLException {
+    public RestResponse restMethod(String phone) {
         RestResponse result = new RestResponse();
-        ConnectDb db = new ConnectDb();
-        db.connectSql();
-        db.setBlockime(phone);
-        db.deleteSession(phone);
-        db.disconnectSql();
-        result.setP1("удален");
-        result.setP2(phone);
-
-
+        try {
+            ConnectDb db = new ConnectDb();
+            db.connectSql();
+            if (db.checkExistPhone(phone)==false){
+                db.disconnectSql();
+                result.setStatus("Номер не найден");
+                result.setPhone(phone);
+            } else {
+                db.setBlockime(phone);
+                db.deleteSession(phone);
+                db.disconnectSql();
+                result.setStatus("удалили");
+                result.setPhone(phone);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            result.setStatus("ошибка сервера");
+            result.setPhone(phone);
+        }
         return result;
     }
 

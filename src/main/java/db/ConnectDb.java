@@ -48,12 +48,22 @@ public class ConnectDb {
         statementSql.execute("Delete from `cis`.`session` where `phone` = '" + phone +"';");
         }
 
-    public static void main(String[] args) throws SQLException {
-        connectSql();
-        setBlockime("124");
-        deleteSession("123");
-        disconnectSql();
-    }
+        public static boolean checkExistPhone(String phone) throws SQLException {
+        ResultSet resultSet = statementSql.executeQuery("select phone from users where phone ="+phone);
+        if (resultSet.next()) {
+            return true;
+        }else {
+            return false;
+        }
+        }
+
+//    public static void main(String[] args) throws SQLException {
+//        connectSql();
+//        //setBlockime("124");
+//        //deleteSession("123");
+//        System.out.println(checkExistPhone("129"));
+//        disconnectSql();
+//    }
 }
 
 
